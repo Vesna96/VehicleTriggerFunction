@@ -1,8 +1,9 @@
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using VehicleFunction.Repositories;
-using VehicleFunction.Services;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -11,8 +12,18 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
 
-        services.AddHttpClient();
-        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IVehicleRepository>(sp =>
+        {
+            var configuration = sp.GetRequiredService<IConfiguration>();
+            var option = configuration["StorageOption"];
+
+            return option switch
+            {
+                "Database" => new DatabaseVehicleRepository(),
+                _ => new FileVehicleRepository(sp.GetRequiredService<ILogger<FileVehicleRepository>>())
+            };
+        });
+
         services.AddScoped<VehicleService>();
     })
     .Build();

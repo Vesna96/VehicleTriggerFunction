@@ -1,6 +1,5 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using VehicleFunction.Services;
 
 namespace VehicleFunction
 {
@@ -16,29 +15,26 @@ namespace VehicleFunction
         }
 
         [Function("VehicleFunction")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer)
+        public async Task Run([TimerTrigger("0 0 * * * *")] TimerInfo myTimer)
         {
-            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            _logger.LogInformation($"C# Timer trigger executed at: {DateTime.Now}");
 
-            var allAds = await _vehicleService.FetchAllAdsAsync("Polovniautomobili");
+            var allAds = await _vehicleService.FetchAllAdsAsync("Polovniautomobili"); 
 
             if (allAds.Count > 0)
             {
-                var filePath = await _vehicleService.SaveAdsToCsvAsync(allAds); 
-                await _vehicleService.UploadCsvAsync(filePath);
+                await _vehicleService.SaveAdsAsync(allAds);
 
-                await _vehicleService.InsertAdsToDatabaseAsync(allAds);
-
-                _logger.LogInformation($"Total collected ads: {allAds.Count}");             
+                _logger.LogInformation($"Total collected ads: {allAds.Count}");
             }
             else
             {
-                _logger.LogInformation("No vehicle ads fetched in total.");
+                _logger.LogInformation("No vehicle ads fetched.");
             }
 
-            if (myTimer.ScheduleStatus is not null)
+            if (myTimer.ScheduleStatus != null)
             {
-                _logger.LogInformation($"Next timer schedule at: {myTimer.ScheduleStatus.Next}");
+                _logger.LogInformation($"Next schedule at: {myTimer.ScheduleStatus.Next}");
             }
         }
     }
