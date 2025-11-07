@@ -24,7 +24,7 @@ var host = new HostBuilder()
             };
         });
 
-        services.AddScoped<VehicleService>();
+        services.AddHttpClient<VehicleService>();
     })
     .Build();
 

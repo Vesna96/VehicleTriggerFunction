@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using Azure.Storage.Blobs;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -34,7 +35,7 @@ namespace VehicleFunction.Repositories
 
             try
             {
-                using (var writer = new StreamWriter(filePath))
+                using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
                 using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
                 {
                     await csv.WriteRecordsAsync(ads);
