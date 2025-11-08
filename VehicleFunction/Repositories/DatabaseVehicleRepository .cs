@@ -79,7 +79,8 @@ public class DatabaseVehicleRepository : IVehicleRepository
         var sql = @"
             INSERT INTO VehicleAd 
             (AdId, Title, Price, Year, Mileage, Power, BrandId, ModelId, FuelTypeId, LocationId, Source, CreatedAt)
-            VALUES (@AdID, @Title, @Price, @Year, @Mileage, @Power, @BrandId, @ModelId, @FuelTypeId, @LocationId, @Source, @CreatedAt)";
+            SELECT @AdID, @Title, @Price, @Year, @Mileage, @Power, @BrandId, @ModelId, @FuelTypeId, @LocationId, @Source, @CreatedAt
+            WHERE NOT EXISTS (SELECT 1 FROM VehicleAd WHERE AdId = @AdID)";
 
         await connection.ExecuteAsync(sql, ads);
     }

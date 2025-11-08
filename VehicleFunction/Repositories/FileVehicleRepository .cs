@@ -23,7 +23,7 @@ namespace VehicleFunction.Repositories
         {
             var filePath = await SaveToCsvAsync(ads);
 
-            await UploadCsvToBlobAsync(filePath);
+            //await UploadCsvToBlobAsync(filePath);
         }
 
 
